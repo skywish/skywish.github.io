@@ -164,6 +164,40 @@ kramdown:
   enable_coderay: false
 
 
+# Recommended Front Matter Defaults: jerklly recommends formatted name of files in _post dir 
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+  # _docs
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: single
+      read_time: false
+      author_profile: false
+      share: false
+      comments: false
+      # set sidebar from _data/navigation
+      sidebar:
+        nav: "docs"
+
 # Sass/SCSS
 sass:
   sass_dir: _sass
