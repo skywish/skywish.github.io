@@ -1,6 +1,7 @@
 ---
 permalink: /about/
 title: "About"
+author_profile: true
 modified: 2017-01-24T09:40:33-05:00
 ---
 
