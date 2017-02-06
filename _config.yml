@@ -79,7 +79,7 @@ analytics:
 author:
   name             : "Lee Chi"
   avatar           : "/assets/images/avatar.jpg"
-  bio              :
+  bio              : "Where There's a Will There's a Way"
   location         : "Los Angeles"
   email            : 
   uri              :
@@ -89,7 +89,7 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           :
+  github           : "https://github.com/skywish"
   google_plus      :
   keybase          :
   instagram        :
