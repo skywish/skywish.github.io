@@ -1,5 +1,5 @@
 ---
-title: "287. Find the Duplicate Number"
+title: "287_Find the Duplicate Number"
 categories:
   - LeetCode
 tags:

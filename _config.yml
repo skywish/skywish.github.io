@@ -264,8 +264,15 @@ compress_html:
   ignore:
     envs: development
 
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:path/
 
-# Defaults
+
+# Defaults layout. Using YAML Front Matter is one way that you can specify configuration in the pages and posts for your site. 
+# Setting things like a default layout, or customizing the title, or specifying a more precise date/time for the post can all be added to your page or post front matter.
 defaults:
   # _posts
   - scope:
@@ -278,3 +285,20 @@ defaults:
       comments: # true
       share: true
       related: true
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+  # _docs
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: single
+      read_time: false
+      author_profile: true
+      share: false
+      comments: false
