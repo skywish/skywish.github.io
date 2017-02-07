@@ -1,11 +1,11 @@
 # main links
 main:
+  - title: "Docs"
+    url: /archive_collection/
   - title: "Timeline"
     url: /archive_year/
   - title: "Category"
     url: /categories/
-  - title: "Collection"
-    url: /archive_collection/
   - title: "About"
     url: /about/
   # - title: "About"

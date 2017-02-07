@@ -6,13 +6,20 @@ modified: 2017-02-06T14:33:41
 ---
 Daily Record of LeetCode
 
+{% include toc %}
+
 ## 2017-02-06
-#### 287. Find the Duplicate Number
-#### 283. Move Zeroes
-#### 268. Missing Number
+
+### 287 Find the Duplicate Number
+
+### 283 Move Zeroes
+
+### 268 Missing Number
 The basic idea is to use XOR operation. We all know that a^b^b =a
-#### 219. Contains Duplicate II
-My first solution: find two Duplicate nums and see if less than k
+
+### 219 Contains Duplicate II
+**My first solution**: find two Duplicate nums and see if less than k
+
 ```java
 public class Solution {
     public boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -29,7 +36,9 @@ public class Solution {
     }
 }
 ```
-Top solution: maintain a set, whose size is k, and see if nums[i] is in this set.
+
+**Top solution**: maintain a set, whose size is k, and see if nums[i] is in this set.
+
 ```java
 public class Solution {
     public boolean containsNearbyDuplicate(int[] nums, int k) {
@@ -47,9 +56,12 @@ public class Solution {
     }
 }
 ``` 
-#### 217. Contains Duplicate
-#### 216. Combination Sum III
+
+### 217 Contains Duplicate
+
+### 216 Combination Sum III
 backtracking 回溯算法
+
 ```java
  public List<List<Integer>> combinationSum3(int k, int n) {
     List<List<Integer>> ans = new ArrayList<>();

@@ -7,10 +7,10 @@
 
 # Site Settings
 locale                   : "en"
-title                    : "My Blog"
+title                    : "Skywish"
 title_separator          : "-"
 name                     : "Lee"
-description              : "My blog"
+description              : "My Blog"
 url                      : "https://skywish.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "skywish/skywish.github.io"
