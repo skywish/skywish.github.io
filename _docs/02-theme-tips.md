@@ -9,6 +9,19 @@ Building github page using [Minimal Mistakes](https://mmistakes.github.io/minima
 
 {% include toc %}
 
+### Config environment
+
+#### Windows
+
+- Download rubyinstaller and DevKit from [rubyinstaller](http://rubyinstaller.org/downloads/).  
+
+- Run rubyinstaller, and run DevKit to extract it somewhere (permanent). Then cd to it, run `ruby dk.rb init` and `ruby dk.rb install` to bind it to ruby installations in your path.
+
+- Install `gem` by `gem update --system`, install `jekyll` by `gem install jekyll`, install bundler by `gem install bundler`
+
+- Update bundle by `bundle update`
+
+
 ### Create table of contents
 
 Add `% include toc %` into `{...}` at the beginning of the `.md` files.
