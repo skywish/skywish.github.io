@@ -37,6 +37,7 @@ $ bundle exec jekyll serve
 ### Change font size
 
 **Change page content font size**: go to `/_sass/_page.scss`, and find the following codes. `p` refers to the content font size.
+
 ```css
   p, li, dl {
     font-size: 0.8em;
@@ -44,8 +45,10 @@ $ bundle exec jekyll serve
 ```
 
 **Change code font size**: go to `/_sass/_syntax.scss`, and find following codes.
+
 ```css
 div.highlighter-rouge,
 figure.highlight {
   font-size: 0.5em;
+}
 ```
