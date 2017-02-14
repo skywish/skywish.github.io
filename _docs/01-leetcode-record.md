@@ -548,3 +548,110 @@ public class Solution {
     }
 }
 ```
+
+## 2017-02-13
+### 27. Remove Element
+Top solution:
+
+```java
+public class Solution {
+    public int removeElement(int[] nums, int val) {
+        int begin = 0;
+        for(int i : nums) {
+            if (i != val) {
+                nums[begin++] = i;
+            }
+        }
+        return begin;
+    }
+}
+```
+
+My solution : the same as 
+```java
+public class Solution {
+    public int removeElement(int[] nums, int val) {
+        int len = nums.length, res = len, count = 0;
+        for (int i = 0; i < len; i++) {
+            if (nums[i] == val) {
+                count++;
+                res--;
+            } else if (count > 0) {
+                nums[i - count] = nums[i]; 
+            }
+        }
+        return res;
+    }
+}
+```
+
+### 367. Valid Perfect Square
+
+Top solution: to use __Newton Method__ to calculate the square root or num, refer to Newton Method for details.
+
+```java
+public boolean isPerfectSquare(int num) {
+    long x = num;
+    while (x * x > num) {
+        x = (x + num / x) >> 1;
+    }
+    return x * x == num;
+}
+```
+
+### 139. Word Break
+> Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+> 
+For example, given
+s = "leetcode",
+dict = ["leet", "code"].
+Return true because "leetcode" can be segmented as "leet code".
+
+Top solution:
+
+```java
+public class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> set = new HashSet<String>(wordDict);
+        boolean[] list = new boolean[s.length() + 1];
+        list[0] = true;
+
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                // substring(begin, end)  [begin, end)
+                if (list[j] && set.contains(s.substring(j, i))) {
+                    list[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return list[s.length()];
+    }
+}
+```
+
+第一次没理解对题目，以为是 combine several string ， 但实际上是看是否能靠 wordDict 组成 String。
+```java
+public class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int index = 0;
+
+        for (int i = 0; i < wordDict.size(); i++) {
+            index = s.indexOf(wordDict.get(i));
+            if (index >= 0) {
+                map.put(index, index + wordDict.get(i).length());
+            }
+        }
+        
+        index = 0;
+        
+        while(map.containsKey(index)) {
+            index = map.get(index);
+        }
+        
+        return index == s.length();
+    }
+}
+```
