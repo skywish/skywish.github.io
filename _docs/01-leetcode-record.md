@@ -63,10 +63,7 @@ public class Solution {
 
 ### 216 Combination Sum III
 
-Use DFS to search all possible combinations. For 1, search 2 to 9; for 2, search
-3 to 9; and etc. We need to notice that A.add(B), if you change B in Java, A
-also changes. So we need to create new ArrayList and deep copy temp, like
-`ans.add(new ArrayList<>(temp))`
+Use DFS to search all possible combinations. For 1, search 2 to 9; for 2, search 3 to 9; and etc. We need to notice that A.add(B), if you change B in Java, A also changes. So we need to create new ArrayList and deep copy temp, like `ans.add(new ArrayList<>(temp))`
 
 ```java
 public class Solution {
@@ -126,8 +123,7 @@ private void combination(List<List<Integer>> ans, List<Integer> comb, int k,  in
 
 ### 189. Rotate Array
 
-Reverse the first n - k elements, the last k elements, and then all the n elements.
-Time complexity: O(n). Space complexity: O(1).
+Reverse the first n - k elements, the last k elements, and then all the n elements. Time complexity: O(n). Space complexity: O(1).
 
 ```java
 public class Solution {
@@ -203,7 +199,6 @@ public class Solution {
 ```
 
 ### 153. Find Minimum in Rotated Sorted Array
-
 Suppose an array sorted in ascending order is rotated at some pivot unknown to
 you beforehand.
 
@@ -214,11 +209,10 @@ Find the minimum element.
 **Solution:** According to the rule, the rightest num must be local largest,
 the first left number must be local smallest. If `left < right`, that means the
 left one is actually the smallest one.
-The key thought is to find an element that `A[i-1] < A[i] > A[i+1]`. If the middle
-number is larger than the rightest one, the minimum number is on the right.
-Else, it must be on the left.
-`A[mid] > A[right] > A[mid+i]`. We can see if we want to find minimum number, it
-must locate at the place which is lower than other place, like a **canyon**.
+
+The key thought is to find an element that `A[i-1] < A[i] > A[i+1]`. If the middle number is larger than the rightest one, the minimum number is on the right. Else, it must be on the left. 
+
+`A[mid] > A[right] > A[mid+i]`. We can see if we want to find minimum number, it must locate at the place which is lower than other place, like a **canyon**.
 
 ```java
 public class Solution {
@@ -273,11 +267,12 @@ public class Solution {
 ```
 
 ## 2017-02-10
+
 ### 15. 3Sum
 > Given an array S of n integers, are there elements a, b, c in S such that a +
 b + c = 0? Find all unique triplets in the array which gives the sum of zero.
 
-我们需要注意，对于res[0],我们要求它与之前的数要不一样。对于res[1]，我们要求其与
+我们需要注意，对于res[0],我们要求它与之前的数要不一样。
 
 Top solution:
 
@@ -366,8 +361,9 @@ public class Solution {
 
 ### 16. 3Sum Closest
 > Given an array S of n integers, find three integers in S such that the sum is
-closest to a given number, target. Return the sum of the three integers. You may
-assume that each input would have exactly one solution.
+closest to a given number, target. 
+> 
+> Return the sum of the three integers. You may assume that each input would have exactly one solution.
 
 ```java
 public class Solution {
@@ -544,10 +540,9 @@ public class Solution {
 ### 26. Remove Duplicates from Sorted Array
 >Given a sorted array, remove the duplicates in place such that each element
 appear only once and return the new length. Do not allocate extra space for
-another array, you must do this in place with constant memory. For example,
-Given input array nums = [1,1,2], Your function should return length = 2, with
-the first two elements of nums being 1 and 2 respectively. It doesn't matter
-what you leave beyond the new length.
+another array, you must do this in place with constant memory. 
+>
+For example, Given input array nums = [1,1,2], Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively. It doesn't matter what you leave beyond the new length.
 
 ```java
 public class Solution {
@@ -570,6 +565,7 @@ public class Solution {
 ```
 
 ## 2017-02-13
+
 ### 27. Remove Element
 Top solution:
 
@@ -588,6 +584,7 @@ public class Solution {
 ```
 
 My solution : the same as
+
 ```java
 public class Solution {
     public int removeElement(int[] nums, int val) {
@@ -622,9 +619,7 @@ public boolean isPerfectSquare(int num) {
 
 ### 139. Word Break
 > Given a non-empty string s and a dictionary wordDict containing a list of
-non-empty words, determine if s can be segmented into a space-separated sequence
-of one or more dictionary words. You may assume the dictionary does not contain
-duplicate words.
+non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
 >
 For example, given
 s = "leetcode",
@@ -656,6 +651,7 @@ public class Solution {
 ```
 
 第一次没理解对题目，以为是 combine several string ， 但实际上是看是否能靠 wordDict 组成 String。
+
 ```java
 public class Solution {
     public boolean wordBreak(String s, List<String> wordDict) {
