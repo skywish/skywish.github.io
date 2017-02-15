@@ -2,7 +2,7 @@
 title: "LeetCode Record"
 permalink: /docs/leetcode-record/
 excerpt: "Daily Record of LeetCode"
-modified: 2017-02-06T14:33:41 
+modified: 2017-02-06T14:33:41
 ---
 Daily Record of LeetCode
 
@@ -47,7 +47,7 @@ public class Solution {
         for (int i = 0; i < len; i++) {
             if (i > k) {
                 set.remove(nums[i - k - 1]);
-            } 
+            }
             if (!set.add(nums[i])) {
                 return true;
             }
@@ -55,7 +55,7 @@ public class Solution {
         return false;
     }
 }
-``` 
+```
 
 ### 217 Contains Duplicate
 
@@ -63,7 +63,10 @@ public class Solution {
 
 ### 216 Combination Sum III
 
-Use DFS to search all possible combinations. For 1, search 2 to 9; for 2, search 3 to 9; and etc. We need to notice that A.add(B), if you change B in Java, A also changes. So we need to create new ArrayList and deep copy temp, like `ans.add(new ArrayList<>(temp))`
+Use DFS to search all possible combinations. For 1, search 2 to 9; for 2, search
+3 to 9; and etc. We need to notice that A.add(B), if you change B in Java, A
+also changes. So we need to create new ArrayList and deep copy temp, like
+`ans.add(new ArrayList<>(temp))`
 
 ```java
 public class Solution {
@@ -73,7 +76,7 @@ public class Solution {
         DFS(res, temp, 0, k, n);
         return res;
     }
-    
+
     private void DFS(List<List<Integer>> ans, List<Integer> temp, int i, int k, int n) {
         if (i > 0) {
             temp.add(i);
@@ -135,7 +138,7 @@ public class Solution {
         reverse(nums, len - k, len - 1);
         reverse(nums, 0, len - 1);
     }
-    
+
     public void reverse(int[] nums, int start, int end) {
         while (start < end) {
             int temp = nums[start];
@@ -150,7 +153,8 @@ public class Solution {
 
 ### 169. Majority Element
 
-If there exists a Majority number, then its count must `> Math.floor(length)`, which can not reduce to 0. So **res** must store the Majority number.
+If there exists a Majority number, then its count must `> Math.floor(length)`,
+which can not reduce to 0. So **res** must store the Majority number.
 
 ```java
 public class Solution {
@@ -173,7 +177,9 @@ public class Solution {
 
 ### 167. Two Sum II - Input array is sorted
 
-Since input array is sorted, we can take advatange of it. The common way to solve those kinds of questions is to use HashMap, but this one we can just use two points.
+Since input array is sorted, we can take advantage of it. The common way to
+solve those kinds of questions is to use HashMap, but this one we can just use
+two points.
 
 ```java
 public class Solution {
@@ -198,36 +204,41 @@ public class Solution {
 
 ### 153. Find Minimum in Rotated Sorted Array
 
-Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+Suppose an array sorted in ascending order is rotated at some pivot unknown to
+you beforehand.
 
 (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
 
 Find the minimum element.
 
-**Solution:** According to the rule, the rightest num must be local largest, the leftest number must be local smallest. 
-If `left < right`, that means the left one is actually the smallest one.
-The key thought is to find an element that `A[i-1] < A[i] > A[i+1]`. If the middle number is larger than the rightest one, the minimum number is on the right. Else, it must be on the left.
-`A[mid] > A[right] > A[mid+i]`. We can see if we want to find minimum number, it must locate at the place which is lower than other place, like a **canyon**.
+**Solution:** According to the rule, the rightest num must be local largest,
+the first left number must be local smallest. If `left < right`, that means the
+left one is actually the smallest one.
+The key thought is to find an element that `A[i-1] < A[i] > A[i+1]`. If the middle
+number is larger than the rightest one, the minimum number is on the right.
+Else, it must be on the left.
+`A[mid] > A[right] > A[mid+i]`. We can see if we want to find minimum number, it
+must locate at the place which is lower than other place, like a **canyon**.
 
 ```java
 public class Solution {
     public int findMin(int[] nums) {
         int len = nums.length, left = 0, right = len - 1;
-        
+
         while (left < right) {
             if (nums[left] < nums[right]) {
                 return nums[left];
             }
-            
+
             int mid = (left + right) / 2;
-            
+
             if (nums[mid] > nums[right]) {
                 left = mid + 1;
             } else {
                 right = mid;
             }
         }
-        
+
         return nums[left];
     }
 }
@@ -235,7 +246,10 @@ public class Solution {
 
 ### 152. Maximum Product Subarray
 
-Top solution: Loop through the array, each time remember the max and min value for the previous product, the most important thing is to update the max and min value: we have to compare among max * A[i], min * A[i] as well as A[i], since this is product, a negative * negative could be positive.
+Top solution: Loop through the array, each time remember the max and min value
+for the previous product, the most important thing is to update the max and min
+value: we have to compare among max * A[i], min * A[i] as well as A[i], since
+this is product, a negative * negative could be positive.
 
 ```java
 public class Solution {
@@ -260,7 +274,8 @@ public class Solution {
 
 ## 2017-02-10
 ### 15. 3Sum
-> Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+> Given an array S of n integers, are there elements a, b, c in S such that a +
+b + c = 0? Find all unique triplets in the array which gives the sum of zero.
 
 我们需要注意，对于res[0],我们要求它与之前的数要不一样。对于res[1]，我们要求其与
 
@@ -281,7 +296,7 @@ public class Solution {
                         // skip same result
                         while (low < high && nums[low] == nums[low + 1]) {
                             low++;
-                        } 
+                        }
                         // skip same result
                         while (low < high && nums[high] == nums[high - 1]) {
                             high--;
@@ -293,7 +308,7 @@ public class Solution {
                     } else {
                         low++;
                     }
-                } 
+                }
             }
         }
         return res;
@@ -314,7 +329,7 @@ public class Solution {
         }
         return res;
     }
-    
+
     public void resSum(int[] nums, List<List<Integer>> res, List<Integer> list, int i, int sum, int count) {
         if (count == 2) {
             if (nums[i] + sum == 0) {
@@ -350,7 +365,9 @@ public class Solution {
 ```
 
 ### 16. 3Sum Closest
-> Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+> Given an array S of n integers, find three integers in S such that the sum is
+closest to a given number, target. Return the sum of the three integers. You may
+assume that each input would have exactly one solution.
 
 ```java
 public class Solution {
@@ -525,9 +542,12 @@ public class Solution {
 ```
 
 ### 26. Remove Duplicates from Sorted Array
->Given a sorted array, remove the duplicates in place such that each element appear only once and return the new length. 
-Do not allocate extra space for another array, you must do this in place with constant memory.
-For example, Given input array nums = [1,1,2], Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively. It doesn't matter what you leave beyond the new length.
+>Given a sorted array, remove the duplicates in place such that each element
+appear only once and return the new length. Do not allocate extra space for
+another array, you must do this in place with constant memory. For example,
+Given input array nums = [1,1,2], Your function should return length = 2, with
+the first two elements of nums being 1 and 2 respectively. It doesn't matter
+what you leave beyond the new length.
 
 ```java
 public class Solution {
@@ -567,7 +587,7 @@ public class Solution {
 }
 ```
 
-My solution : the same as 
+My solution : the same as
 ```java
 public class Solution {
     public int removeElement(int[] nums, int val) {
@@ -577,7 +597,7 @@ public class Solution {
                 count++;
                 res--;
             } else if (count > 0) {
-                nums[i - count] = nums[i]; 
+                nums[i - count] = nums[i];
             }
         }
         return res;
@@ -587,7 +607,8 @@ public class Solution {
 
 ### 367. Valid Perfect Square
 
-Top solution: to use __Newton Method__ to calculate the square root or num, refer to Newton Method for details.
+Top solution: to use __Newton Method__ to calculate the square root or num,
+refer to Newton Method for details.
 
 ```java
 public boolean isPerfectSquare(int num) {
@@ -600,8 +621,11 @@ public boolean isPerfectSquare(int num) {
 ```
 
 ### 139. Word Break
-> Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
-> 
+> Given a non-empty string s and a dictionary wordDict containing a list of
+non-empty words, determine if s can be segmented into a space-separated sequence
+of one or more dictionary words. You may assume the dictionary does not contain
+duplicate words.
+>
 For example, given
 s = "leetcode",
 dict = ["leet", "code"].
@@ -625,7 +649,7 @@ public class Solution {
                 }
             }
         }
-        
+
         return list[s.length()];
     }
 }
@@ -644,13 +668,13 @@ public class Solution {
                 map.put(index, index + wordDict.get(i).length());
             }
         }
-        
+
         index = 0;
-        
+
         while(map.containsKey(index)) {
             index = map.get(index);
         }
-        
+
         return index == s.length();
     }
 }
