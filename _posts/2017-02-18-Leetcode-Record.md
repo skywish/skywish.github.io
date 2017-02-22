@@ -665,9 +665,9 @@ public class Solution {
 }
 ```
 
-### 2017-02-21
+## 2017-02-21
 
-#### 41. First Missing Positive
+### 41. First Missing Positive
 
 > Given an unsorted integer array, find the first missing positive integer.
 >
@@ -706,7 +706,7 @@ public class Solution {
 }
 ```
 
-#### 7. Reverse Integer
+### 7. Reverse Integer
 
 > Reverse digits of an integer.
 >
@@ -755,7 +755,7 @@ public class Solution {
 }
 ```
 
-#### 14. Longest Common Prefix
+### 14. Longest Common Prefix
 
 ```java
 public class Solution {
@@ -779,7 +779,7 @@ public class Solution {
 }
 ```
 
-#### 350. Intersection of Two Arrays II
+### 350. Intersection of Two Arrays II
 
 ```java
 import java.util.*;
