@@ -399,11 +399,12 @@ public class Solution {
 Top solution: 基本思想不变，加了很多判断语句来减少循环次数。
 
 ```java
-public List<List<Integer>> fourSum(int[] nums, int target) {
-		ArrayList<List<Integer>> res = new ArrayList<List<Integer>>();
-		int len = nums.length;
-		if (nums == null || len < 4)
-			return res;
+public class Solution {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        ArrayList<List<Integer>> res = new ArrayList<List<Integer>>();
+        int len = nums.length;
+        if (nums == null || len < 4)
+        	return res;
 
 		Arrays.sort(nums);
 
@@ -432,12 +433,6 @@ public List<List<Integer>> fourSum(int[] nums, int target) {
 		return res;
 	}
 
-	/*
-	 * Find all possible distinguished three numbers adding up to the target
-	 * in sorted array nums[] between indices low and high. If there are,
-	 * add all of them into the ArrayList fourSumList, using
-	 * fourSumList.add(Arrays.asList(z1, the three numbers))
-	 */
 	public void threeSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumList,
 			int z1) {
 		if (low + 1 >= high)
@@ -469,12 +464,6 @@ public List<List<Integer>> fourSum(int[] nums, int target) {
 
 	}
 
-	/*
-	 * Find all possible distinguished two numbers adding up to the target
-	 * in sorted array nums[] between indices low and high. If there are,
-	 * add all of them into the ArrayList fourSumList, using
-	 * fourSumList.add(Arrays.asList(z1, z2, the two numbers))
-	 */
 	public void twoSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumList, int z1, int z2) {
 
 		if (low >= high)
@@ -503,6 +492,7 @@ public List<List<Integer>> fourSum(int[] nums, int target) {
 		}
 		return;
 	}
+}
 ```
 
 My solution: The same as 3sum
@@ -568,6 +558,7 @@ public class Solution {
 ## 2017-02-13
 
 ### 27. Remove Element
+
 Top solution:
 
 ```java
@@ -619,13 +610,10 @@ public boolean isPerfectSquare(int num) {
 ```
 
 ### 139. Word Break
-> Given a non-empty string s and a dictionary wordDict containing a list of
-non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
->
-For example, given
-s = "leetcode",
-dict = ["leet", "code"].
-Return true because "leetcode" can be segmented as "leet code".
+
+> Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+
+>For example, given s = "leetcode", dict = ["leet", "code"]. Return true because "leetcode" can be segmented as "leet code".
 
 Top solution:
 
@@ -676,3 +664,293 @@ public class Solution {
     }
 }
 ```
+
+### 2017-02-21
+
+#### 41. First Missing Positive
+
+> Given an unsorted integer array, find the first missing positive integer.
+>
+> For example, Given [1,2,0] return 3, and [3,4,-1,1] return 2.
+>
+> Your algorithm should run in O(n) time and uses constant space.
+
+> Tag： 数组
+> 运行时间 > 48%
+
+`nums[nums[i]- 1]` 指的是 nums[i] 对应的数对应的数组位置，通过 while 循环，利用数组的特征，保证`nums[nums[i]- 1] == nums[i]`。很多数组题要求 constant space 都可以想到数组可以看成 Map<Integer, Integer> 。
+
+
+```java
+public class Solution {
+    public int firstMissingPositive(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            while (nums[i] >= 1 && nums[i] <= nums.length && nums[nums[i]- 1] != nums[i]) {
+                swap(nums, i, nums[i] - 1);  
+            } 
+        }
+        
+        int i = 0;
+        while (i < nums.length && nums[i] == i + 1) {
+            i++;
+        }
+        
+        return i + 1;
+    }
+    
+    public void swap(int[] nums, int i, int j) {
+        nums[i] ^= nums[j];
+        nums[j] ^= nums[i];
+        nums[i] ^= nums[j];
+    }
+}
+```
+
+#### 7. Reverse Integer
+
+> Reverse digits of an integer.
+>
+> Example1: x = 123, return 321
+> Example2: x = -123, return -321
+
+Top solution: `res`代表位数，`tail`代表用`%`获取的最末尾的数，逐次循环将数字反转，若遇到`(newRes - tail) / 10 != res`时，必然是 newRes overflow，输出0。用 IDE 运行`x=-2147483648`的情况，`newRes = -846384741 * 10  - 2 = 126087180`
+
+```java
+public class Solution {
+    public int reverse(int x) {
+        int res = 0;
+        
+        while(x !=  0) {
+            int tail = x % 10;
+            int newRes = res * 10 + tail;
+            if ((newRes - tail) / 10 != res) {
+                return 0;
+            }
+            res = newRes;
+            x /= 10;
+        }
+        
+        return res;
+    }
+}
+```
+
+脑洞大开版：利用`Integer.toString`将 num 转换为 String，利用`new StringBuffer().reverse().toString()`将 string 翻转，利用`Integer.parseInt()`将 String 转换为 int
+缺点：overflow
+
+```java
+public class Solution {
+    public int reverse(int x) {
+        String ori = Integer.toString(x), res = "";
+        
+        if (ori.charAt(0) == '-') {
+            res = new StringBuffer(ori.substring(1)).reverse().toString();
+            res = "-" + res;
+        } else {
+            res = new StringBuffer(ori).reverse().toString();
+        }
+        
+        return Integer.parseInt(res);
+    }
+}
+```
+
+#### 14. Longest Common Prefix
+
+```java
+public class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        String res = "";
+        if (strs.length == 0) {
+            return res;
+        }
+        for (int i = 0; i < strs[0].length(); i++) {
+            char a = strs[0].charAt(i);
+            for (int j = 0; j < strs.length; j++) {
+                if (i >= strs[j].length() || a != strs[j].charAt(i)) {
+                    return res;
+                }
+            }
+            res += a;
+        }
+        
+        return res;
+    }
+}
+```
+
+#### 350. Intersection of Two Arrays II
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        
+        if (nums1.length == 0 || nums2.length == 0) {
+            return new int[0];
+        }
+        
+        List<Integer> list = new ArrayList<>();
+        
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] == nums2[j]) {
+                list.add(nums1[i]);
+                i++;
+                j++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                i++;
+            }
+        }
+        
+        int[] res = new int[list.size()];
+        for (int k = 0; k < list.size(); k++) {
+            res[k] = list.get(k);
+        }
+        return res;
+    }
+}
+```
+
+### 174. Dungeon Game
+
+> The demons had captured the princess (P) and imprisoned her in the bottom-right corner of a dungeon. The dungeon consists of M x N rooms laid out in a 2D grid. Our valiant knight (K) was initially positioned in the top-left room and must fight his way through the dungeon to rescue the princess.
+>
+> The knight has an initial health point represented by a positive integer. If at any point his health point drops to 0 or below, he dies immediately.
+>
+> Some of the rooms are guarded by demons, so the knight loses health (negative integers) upon entering these rooms; other rooms are either empty (0's) or contain magic orbs that increase the knight's health (positive integers).
+>
+> In order to reach the princess as quickly as possible, the knight decides to move only rightward or downward in each step.
+>
+> Write a function to determine the knight's minimum initial health so that he is able to rescue the princess.
+
+一开始想用 uniform cost search 做，但实现过于复杂，代码行数太多。  
+看了 solution ，一般用动态规划做。从最右下角的格子开始算起，比较1（最少生命是1）和相邻格子减去本格子的值，取较大者，从右下角扩散到左上角。  
+比较好奇感觉能用 UCS 做，不知道哪个快点。
+
+```java
+public class Solution {
+    public int calculateMinimumHP(int[][] dungeon) {
+        int m = dungeon.length;
+        int n = dungeon[0].length;
+        
+        int[][] cost = new int[m][n];
+        cost[m - 1][n - 1] = Math.max(1, 1 - dungeon[m - 1][n - 1]);
+        
+        for (int i = m - 2; i >= 0; i--) {
+            cost[i][n - 1] = Math.max(1, cost[i + 1][n - 1] - dungeon[i][n - 1]);
+        }
+        
+        for (int j = n - 2; j >= 0; j--) {
+            cost[m - 1][j] = Math.max(1, cost[m - 1][j + 1] - dungeon[m - 1][j]);
+        }
+        
+        for (int i = m - 2; i >= 0; i--) {
+            for (int j = n - 2; j >= 0; j--) {
+                cost[i][j] = Math.max(1, Math.min(cost[i][j + 1] - dungeon[i][j], cost[i + 1][j] - dungeon[i][j]));
+            }
+        }
+        
+        return cost[0][0];
+    }
+}
+```
+
+### 228. Summary Ranges
+
+比较简单
+
+```java
+public class Solution {
+    public List<String> summaryRanges(int[] nums) {
+        if (nums.length == 0) {
+            return new ArrayList<>(); 
+        }
+        int low = 0, high = 0;
+        List<String> list = new ArrayList<>();
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == nums[i - 1] + 1) {
+                high = i;
+            } else {
+                String s = low == high ? nums[low] + "" : nums[low] + "->" + nums[high];
+                list.add(s);
+                low = i;
+                high = i;
+            }
+        }
+        
+        String s = low == high ? nums[low] + "" : nums[low] + "->" + nums[high];
+        list.add(s);
+        
+        return list;
+    }
+}
+```
+
+### 28. Implement strStr()
+
+默认规则：当`needle is empty`，返回0。
+
+```java
+public class Solution {
+    public int strStr(String haystack, String needle) {
+        int nlen = needle.length(), hlen = haystack.length();
+        
+        if (nlen == 0) {
+            return 0;
+        }
+        
+        if (nlen > hlen) {
+            return -1;
+        }
+        
+        for (int i = 0; i <= hlen - nlen; i++) {
+            if (haystack.substring(i, i + nlen).equals(needle)) {
+                return i;
+            }
+        }
+        
+        return -1;
+    }
+}
+```
+
+### 103. Binary Tree Zigzag Level Order Traversal
+
+use DFS 
+
+```java
+public class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) 
+    {
+        List<List<Integer>> sol = new ArrayList<>();
+        travel(root, sol, 0);
+        return sol;
+    }
+    
+    private void travel(TreeNode curr, List<List<Integer>> sol, int level)
+    {
+        if(curr == null) return;
+        
+        if(sol.size() <= level)
+        {
+            List<Integer> newLevel = new LinkedList<>();
+            sol.add(newLevel);
+        }
+        
+        List<Integer> collection  = sol.get(level);
+        if(level % 2 == 0) collection.add(curr.val);
+        else collection.add(0, curr.val);
+        
+        travel(curr.left, sol, level + 1);
+        travel(curr.right, sol, level + 1);
+    }
+}
+```
+
