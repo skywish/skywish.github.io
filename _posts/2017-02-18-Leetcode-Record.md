@@ -786,16 +786,12 @@ import java.util.*;
 
 public class Solution {
     public int[] intersect(int[] nums1, int[] nums2) {
-        
         if (nums1.length == 0 || nums2.length == 0) {
             return new int[0];
         }
-        
         List<Integer> list = new ArrayList<>();
-        
         Arrays.sort(nums1);
         Arrays.sort(nums2);
-        
         int i = 0, j = 0;
         while (i < nums1.length && j < nums2.length) {
             if (nums1[i] == nums2[j]) {
@@ -808,7 +804,6 @@ public class Solution {
                 i++;
             }
         }
-        
         int[] res = new int[list.size()];
         for (int k = 0; k < list.size(); k++) {
             res[k] = list.get(k);
@@ -839,24 +834,19 @@ public class Solution {
     public int calculateMinimumHP(int[][] dungeon) {
         int m = dungeon.length;
         int n = dungeon[0].length;
-        
         int[][] cost = new int[m][n];
         cost[m - 1][n - 1] = Math.max(1, 1 - dungeon[m - 1][n - 1]);
-        
         for (int i = m - 2; i >= 0; i--) {
             cost[i][n - 1] = Math.max(1, cost[i + 1][n - 1] - dungeon[i][n - 1]);
         }
-        
         for (int j = n - 2; j >= 0; j--) {
             cost[m - 1][j] = Math.max(1, cost[m - 1][j + 1] - dungeon[m - 1][j]);
         }
-        
         for (int i = m - 2; i >= 0; i--) {
             for (int j = n - 2; j >= 0; j--) {
                 cost[i][j] = Math.max(1, Math.min(cost[i][j + 1] - dungeon[i][j], cost[i + 1][j] - dungeon[i][j]));
             }
         }
-        
         return cost[0][0];
     }
 }
@@ -870,7 +860,7 @@ public class Solution {
 public class Solution {
     public List<String> summaryRanges(int[] nums) {
         if (nums.length == 0) {
-            return new ArrayList<>(); 
+            return new ArrayList<>();
         }
         int low = 0, high = 0;
         List<String> list = new ArrayList<>();
@@ -884,10 +874,8 @@ public class Solution {
                 high = i;
             }
         }
-        
         String s = low == high ? nums[low] + "" : nums[low] + "->" + nums[high];
         list.add(s);
-        
         return list;
     }
 }
@@ -901,21 +889,17 @@ public class Solution {
 public class Solution {
     public int strStr(String haystack, String needle) {
         int nlen = needle.length(), hlen = haystack.length();
-        
         if (nlen == 0) {
             return 0;
         }
-        
         if (nlen > hlen) {
             return -1;
         }
-        
         for (int i = 0; i <= hlen - nlen; i++) {
             if (haystack.substring(i, i + nlen).equals(needle)) {
                 return i;
             }
         }
-        
         return -1;
     }
 }
@@ -923,34 +907,309 @@ public class Solution {
 
 ### 103. Binary Tree Zigzag Level Order Traversal
 
-use DFS 
+用两个stack，一个存储奇数层，从左到右，`push right -> push left`，一个存储偶数层，从右到左，`push left -> push right`。
 
 ```java
 public class Solution {
-    public List<List<Integer>> zigzagLevelOrder(TreeNode root) 
-    {
-        List<List<Integer>> sol = new ArrayList<>();
-        travel(root, sol, 0);
-        return sol;
-    }
-    
-    private void travel(TreeNode curr, List<List<Integer>> sol, int level)
-    {
-        if(curr == null) return;
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
         
-        if(sol.size() <= level)
-        {
-            List<Integer> newLevel = new LinkedList<>();
-            sol.add(newLevel);
+        if (root == null) {
+            return res;
         }
         
-        List<Integer> collection  = sol.get(level);
-        if(level % 2 == 0) collection.add(curr.val);
-        else collection.add(0, curr.val);
+        Stack<TreeNode> oddLayer = new Stack<>();
+        Stack<TreeNode> evenLayer = new Stack<>();
         
-        travel(curr.left, sol, level + 1);
-        travel(curr.right, sol, level + 1);
+        oddLayer.push(root);
+        
+        while (!oddLayer.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            TreeNode next = null;
+            while (!oddLayer.isEmpty()) {
+                next = oddLayer.pop();
+                if (next.left != null) evenLayer.push(next.left);
+                if (next.right != null) evenLayer.push(next.right);
+                temp.add(next.val);
+            }
+            res.add(temp);
+            
+            temp = new ArrayList<>();
+            while (!evenLayer.isEmpty()) {
+                next = evenLayer.pop();
+                if (next.right != null) oddLayer.push(next.right);
+                if (next.left != null) oddLayer.push(next.left);
+                temp.add(next.val);
+            }
+            if (!temp.isEmpty()) res.add(temp);
+        }
+        
+        return res;
     }
 }
 ```
 
+### 2017-02-22
+
+#### 111. Minimum Depth of Binary Tree
+
+用BFS做，如果有一层左右子树都没有，就返回该层层数。
+Top solution 用 DFS 做，个人感觉不大好，要先遍历左子树才能遍历右子树，取其较小值。最差情况左子树茂盛，右子树稀疏，白白浪费很多时间。
+
+但我的代码需要精简，这是毋庸置疑的。//TODO
+
+```java
+public class Solution {
+    public static int minDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+
+        int layer = 0;
+        Boolean isEmpty = true;
+        List<TreeNode> layer1 = new ArrayList<>();
+        List<TreeNode> layer2 = new ArrayList<>();
+        layer1.add(root);
+        TreeNode next = null;
+
+        while (!layer1.isEmpty()) {
+            while (!layer1.isEmpty()) {
+                next = layer1.remove(0);
+                if (next.left == null && next.right == null)
+                    return layer + 1;
+                if (next.left != null) layer2.add(next.left);
+                if (next.right != null) layer2.add(next.right);
+            }
+
+            layer++;
+
+            while (!layer2.isEmpty()) {
+                isEmpty = false;
+                next = layer2.remove(0);
+                if (next.left == null && next.right == null)
+                    return layer + 1;
+                if (next.left != null) layer1.add(next.left);
+                if (next.right != null) layer1.add(next.right);
+            }
+
+            if (!isEmpty) {
+                layer++;
+                isEmpty = true;
+            }
+
+        }
+
+        return layer;
+    }
+}
+```
+
+```java
+public static int minDepth(TreeNode root) {
+    if (root == null) return 0;
+    if (root.left == null) return minDepth(root.right) + 1;
+    if (root.right == null) return minDepth(root.left) + 1;
+    return Math.min(minDepth(root.left),minDepth(root.right)) + 1;
+}
+```
+
+### 220. Contains Duplicate III
+
+> Given an array of integers, find out whether there are two distinct indices i and j in the array such that the absolute difference between nums[i] and nums[j] is at most t and the absolute difference between i and j is at most k.
+
+The idea is like the bucket sort algorithm. Suppose we have consecutive buckets covering the range of nums with each bucket a width of (t+1). If there are two item with difference <= t, one of the two will happen:
+[Link](https://discuss.leetcode.com/topic/27608/java-python-one-pass-solution-o-n-time-o-n-space-using-buckets/4)
+
+(1) the two in the same bucket
+(2) the two in neighbor buckets
+
+
+```java
+private long getID(long i, long w) {
+    return i < 0 ? (i + 1) / w - 1 : i / w;
+}
+
+public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+    if (t < 0) return false;
+    Map<Long, Long> d = new HashMap<>();
+    long w = (long)t + 1;
+    for (int i = 0; i < nums.length; ++i) {
+        long m = getID(nums[i], w);
+        if (d.containsKey(m))
+            return true;
+        if (d.containsKey(m - 1) && Math.abs(nums[i] - d.get(m - 1)) < w)
+            return true;
+        if (d.containsKey(m + 1) && Math.abs(nums[i] - d.get(m + 1)) < w)
+            return true;
+        d.put(m, (long)nums[i]);
+        if (i >= k) d.remove(getID(nums[i - k], w));
+    }
+    return false;
+}
+```
+
+### 204. Count Primes
+
+>Description: Count the number of prime numbers less than a non-negative number, n.
+
+注意是小于不是<=，
+
+```java
+    public int countPrimes(int n) {
+        boolean[] notPrime = new boolean[n];
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (!notPrime[i]) {
+                count++;
+                for (int j = 2; i * j < n; j++) {
+                    notPrime[i * j] = true;
+                }
+            }
+        }
+        return count;
+    }
+
+    // 小改进，从 j = i 开始，为了防止越界，i <= n ^ 0.5
+    public int countPrimes(int n) {
+        boolean[] notPrime = new boolean[n];
+        int count = 0;
+        double pow = Math.pow(n, 0.5);
+        for (int i = 2; i < n; i++) {
+            if (!notPrime[i]) {
+                count++;
+                for (int j = i; i * j < n && i <= pow; j++) {
+                    notPrime[i * j] = true;
+                }
+            }
+        }
+        return count;
+    }
+```
+
+### 108. Convert Sorted Array to Binary Search Tree
+
+比较简单，但要注意分治时左子树从`（low, mid - 1）`右子树从 `(mid+1, high)`。
+
+```java
+public class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        return buildTree(nums, 0, nums.length - 1);
+    }
+
+    public TreeNode buildTree(int[] nums, int low, int high) {
+        int mid = (low + high) / 2 ;
+        TreeNode next = new TreeNode(nums[mid]);
+        if (mid > low) next.left = buildTree(nums, low, mid - 1);
+        if (mid < high) next.right = buildTree(nums, mid + 1, high);
+        return next;
+    }
+}
+```
+
+### 229. Majority Element II
+
+很有意思的一道题，用了[Majority Voting Algorithm](https://gregable.com/2013/10/majority-vote-algorithm-find-majority.html)，原先是用来找出数量超过 n/2 的数，修改后寻找 n/3 。**尤其注意循环时 if 之间一定要用 else 连接**。最后还要检查 candidate 是否超过 n/3 。**因为可能如果存在 >n/3 的数，candidate 一定是该数，但如果不存在，candidate 就会给出错误答案，充分不必要条件。**
+
+```java
+public class Solution {
+    public List<Integer> majorityElement(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        int count1 = 0, count2 = 0, candidate1 = 0, candidate2 = 1;
+        for (int val : nums) {
+            if (val == candidate1) {
+                count1++;
+            } else if (val == candidate2) {
+                count2++;
+            } else if (count1 == 0) {
+                candidate1 = val;
+                count1++;
+            } else if (count2 == 0) {
+                candidate2 = val;
+                count2++;
+            } else {
+                count1--;
+                count2--;
+            }
+        }
+
+        count1 = 0;
+        count2 = 0;
+        for (int val : nums) {
+            if (val == candidate1) {
+                count1++;
+            } else if (val == candidate2) {
+                count2++;
+            }
+        }
+        if (count1 > nums.length / 3) {
+            res.add(candidate1);
+        }
+        if (count2 > nums.length / 3) {
+            res.add(candidate2);
+        }
+        return res;
+    }
+}
+```
+
+### 199. Binary Tree Right Side View
+
+> Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+>
+> For example:
+> Given the following binary tree,
+>    1            <---
+>  /   \
+> 2     3         <---
+>  \     \
+>   5     4       <---
+> You should return [1, 3, 4].
+
+跟有道遍历的题解法类似，都是用两个数据结构存储不同的层。总结一下，
+- 每次从左往右，2个`FIFO`数据结构，先加入左节点。
+- 每次从右往左，2个`FIFO`数据结构，先加入右节点。
+- 一次从左往右，下一层先push左节点，一次从右往左，下一层先push右节点。2个`FILO`数据结构（Stack）。
+- 一次从右往左，下一层先push右节点，一次从左往右，下一层先push左节点。2个`FILO`数据结构（Stack）。  
+
+```java
+public class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        if (root == null) {
+            return list;
+        }
+        
+        List<TreeNode> layer1 = new ArrayList<>();
+        List<TreeNode> layer2 = new ArrayList<>();
+        
+        layer1.add(root);
+        while (!layer1.isEmpty()) {
+            int count = 0;
+            while (!layer1.isEmpty()) {
+                count++;
+                TreeNode next = layer1.remove(0);
+                if (count == 1) {
+                    list.add(next.val);
+                }
+                if (next.right != null) layer2.add(next.right);
+                if (next.left != null) layer2.add(next.left);
+            } 
+            count = 0;
+            while (!layer2.isEmpty()) {
+                count++;
+                TreeNode next = layer2.remove(0);
+                if (count == 1) {
+                    list.add(next.val);
+                }
+                if (next.right != null) layer1.add(next.right);
+                if (next.left != null) layer1.add(next.left);
+            } 
+        }
+        return list;
+    }
+
+}
+```
