@@ -735,7 +735,10 @@ public class Solution {
 }
 ```
 
-脑洞大开版：利用`Integer.toString`将 num 转换为 String，利用`new StringBuffer().reverse().toString()`将 string 翻转，利用`Integer.parseInt()`将 String 转换为 int
+脑洞大开版：
+
+利用`Integer.toString`将 num 转换为 String，利用`new StringBuffer().reverse().toString()`将 string 翻转，利用`Integer.parseInt()`将 String 转换为 int
+
 缺点：overflow
 
 ```java
@@ -949,9 +952,9 @@ public class Solution {
 }
 ```
 
-### 2017-02-22
+## 2017-02-22
 
-#### 111. Minimum Depth of Binary Tree
+### 111. Minimum Depth of Binary Tree
 
 用BFS做，如果有一层左右子树都没有，就返回该层层数。
 Top solution 用 DFS 做，个人感觉不大好，要先遍历左子树才能遍历右子树，取其较小值。最差情况左子树茂盛，右子树稀疏，白白浪费很多时间。
@@ -1003,6 +1006,7 @@ public class Solution {
     }
 }
 ```
+Top solution: Use DFS.
 
 ```java
 public static int minDepth(TreeNode root) {
@@ -1052,7 +1056,7 @@ public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
 
 >Description: Count the number of prime numbers less than a non-negative number, n.
 
-注意是小于不是<=，
+注意是小于不是 <=
 
 ```java
     public int countPrimes(int n) {
@@ -1088,7 +1092,7 @@ public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
 
 ### 108. Convert Sorted Array to Binary Search Tree
 
-比较简单，但要注意分治时左子树从`（low, mid - 1）`右子树从 `(mid+1, high)`。
+比较简单，但要注意分治时左子树从`（low, mid-1）`右子树从 `(mid+1, high)`。
 
 ```java
 public class Solution {
@@ -1158,15 +1162,7 @@ public class Solution {
 ### 199. Binary Tree Right Side View
 
 > Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
->
-> For example:
-> Given the following binary tree,
->    1            <---
->  /   \
-> 2     3         <---
->  \     \
->   5     4       <---
-> You should return [1, 3, 4].
+
 
 跟有道遍历的题解法类似，都是用两个数据结构存储不同的层。总结一下，
 - 每次从左往右，2个`FIFO`数据结构，先加入左节点。
