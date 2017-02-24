@@ -1392,7 +1392,8 @@ public class Solution {
             return ls;
         }
         StringBuilder sb = new StringBuilder();
-        char[][] num = {{'a','b','c'}, {'d','e','f'}, {'g','h','i'}, {'j','k','l'}, {'m','n','o'}, {'p','q','r','s'}, {'t','u','v'}, {'w','x','y','z'}};
+        // 用 char build 页面有问题，先改成这个
+        String[] mapping = new String[] {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
         addletter(ls, sb, num, digits, 0);
         return ls;
     }
