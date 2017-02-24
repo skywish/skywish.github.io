@@ -1323,11 +1323,9 @@ public class Solution {
 }
 ```
 
-### 9. Palindrome Number
+### 9. (Easy) Palindrome Number
 
 > Determine whether an integer is a palindrome. Do this without extra space.
-
-- Easy
 
 使用了之前的方法将数字反转，再判断是否相等
 
@@ -1348,7 +1346,9 @@ public class Solution {
 }
 ```
 
-### 17. [Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/?tab=Description)
+### 17. Letter Combinations of a Phone Number
+
+[Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/?tab=Description)
 
 > Given a digit string, return all possible letter combinations that the number could represent.
 
@@ -1415,7 +1415,9 @@ public class Solution {
 }
 ```
 
-### 6. [ZigZag Conversion](https://leetcode.com/problems/zigzag-conversion/?tab=Description)
+### 6. ZigZag Conversion
+
+[ZigZag Conversion](https://leetcode.com/problems/zigzag-conversion/?tab=Description)
 
 我的方法就是找规律 // TODO
 
@@ -1451,13 +1453,11 @@ public class Solution {
 }
 ```
 
-### 20. Valid Parentheses
+### 20. (Easy) Valid Parentheses
 
 > Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 >
 > The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
-
-- Easy
 
 用 stack 来做
 
@@ -1479,11 +1479,9 @@ public class Solution {
 }
 ```
 
-### 21. Merge Two Sorted Lists
+### 21. (Easy) Merge Two Sorted Lists
 
 >Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
-
-- Easy
 
 被一道 easy 的题给虐了，一开始没想到用迭代的方法做，结果。。。
 
@@ -1582,7 +1580,9 @@ public class Solution {
 }
 ```
 
-### 32. (Hard) [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/?tab=Description)
+### 32. (Hard) Longest Valid Parentheses
+
+[Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/?tab=Description)
 
 >Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.  
 >For "(()", the longest valid parentheses substring is "()", which has length = 2.  
