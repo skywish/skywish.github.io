@@ -1209,3 +1209,446 @@ public class Solution {
 
 }
 ```
+
+### 2017-02-23
+
+#### 60. Permutation Sequence
+
+>The set [1,2,3,…,n] contains a total of n! unique permutations.
+>
+>By listing and labeling all of the permutations in order, We get the following sequence (ie, for n = 3):
+>
+>"123" "132" "213" "231" "312" "321"
+>
+>Given n and k, return the kth permutation sequence.
+
+这道题看了 [discussion](https://discuss.leetcode.com/topic/17348/explain-like-i-m-five-java-solution-in-o-n/2) 才会，
+- 先建立 factorial 数组，注意 factorial[0] = 1
+- 再建立长度为 n 的列表，建立列表方便增加删除
+- k--，因为 k = 1 就是原始数字
+- index = k / factorial[n - i] 加入 list.remove(index)
+
+
+```java
+public class Solution {
+    public String getPermutation(int n, int k) {
+        int[] factorial = new int[n + 1];
+        factorial[0] = 1;
+        int sum = 1;
+        for (int i = 1; i <= n; i++) {
+            sum *= i;
+            factorial[i] = sum;
+        }
+        
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            list.add(i);
+        }
+        
+        k--;
+        StringBuilder s = new StringBuilder();
+        for (int i = 1; i <= n; i++) {
+            int index = k / factorial[n - i];
+            s.append(String.valueOf(list.remove(index)));
+            k -= index * factorial[n - i];
+        }
+        
+        return String.valueOf(s);
+    }
+}
+```
+
+### 40. Combination Sum II
+
+> Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+>
+> Each number in C may only be used once in the combination.
+
+跟我的方法如出一辙，也是用 DFS
+
+```java
+public List<List<Integer>> combinationSum2(int[] cand, int target) {
+    Arrays.sort(cand);
+    List<List<Integer>> res = new ArrayList<List<Integer>>();
+    List<Integer> path = new ArrayList<Integer>();
+    dfs_com(cand, 0, target, path, res);
+    return res;
+}
+void dfs_com(int[] cand, int cur, int target, List<Integer> path, List<List<Integer>> res) {
+    if (target == 0) {
+        res.add(new ArrayList(path));
+        return ;
+    }
+    if (target < 0) return;
+    for (int i = cur; i < cand.length; i++){
+        if (i > cur && cand[i] == cand[i-1]) continue;
+        path.add(path.size(), cand[i]);
+        dfs_com(cand, i+1, target - cand[i], path, res);
+        path.remove(path.size()-1);
+    }
+}
+```
+
+我的方法比较朴素，用 set 防止重复加入，用 DFS 搜索所有可能的解。不推荐使用
+
+```java
+public class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        Set<List<Integer>> res = new HashSet<>();
+        List<Integer> temp = new ArrayList<>();
+        for (int i = 0; i < candidates.length; i++) {
+            find(res, temp, candidates, target, i);
+        }
+        List<List<Integer>> list = new ArrayList<>(res);
+        return list;
+    }
+
+    public static void find(Set<List<Integer>> res, List<Integer> temp, int[] candidates, int target, int i) {
+        if (candidates[i] == target) {
+            temp.add(target);
+            res.add(new ArrayList(temp));
+            temp.remove(temp.size() - 1);
+            return;
+        } else if (candidates[i] > target) {
+            return;
+        } else {
+            temp.add(candidates[i]);
+            for (int j = i + 1; j < candidates.length; j++) {
+                find(res, temp, candidates, target - candidates[i], j);
+            }
+            temp.remove(temp.size() - 1);
+        }
+    }
+}
+```
+
+### 9. Palindrome Number
+
+> Determine whether an integer is a palindrome. Do this without extra space.
+
+- Easy
+
+使用了之前的方法将数字反转，再判断是否相等
+
+```java
+public class Solution {
+    public boolean isPalindrome(int x) {
+        if (x < 0) {
+            return false;
+        }
+        int res = x, tail = 0, newres = 0;
+        while (res > 0) {
+            tail = res % 10;
+            newres = 10 * newres + tail;
+            res /= 10;
+        }
+        return newres == x;
+    }
+}
+```
+
+### 17. [Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/?tab=Description)
+
+> Given a digit string, return all possible letter combinations that the number could represent.
+
+TOP solution:使用 FIFO 数据结构，每次将字母加入list，读取下字母时取出队列中所有字符串，加入新字母在重新加入队列中。
+
+- 获取 char 所代表的数字，`Character.getNumericValue()`
+- 用 String[] 代替 char[][]
+
+```java
+public class Solution {
+    public List<String> letterCombinations(String digits) {
+        LinkedList<String> ls = new LinkedList<>();
+        if (digits == null || digits.length() == 0) {
+            return ls;
+        }
+
+        ls.add("");
+        String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        for (int i = 0; i < digits.length(); i++) {
+            int x = Character.getNumericValue(digits.charAt(i));
+            while (ls.peek().length() == i) {
+                String before = ls.remove();
+                for (int j = 0; j < mapping[x].length(); j++) {
+                    String after = before + mapping[x].charAt(j);
+                    ls.add(after);
+                }
+            }
+        }
+        return ls;
+    }
+}
+```
+
+用 DFS 做
+
+```java
+public class Solution {
+    public List<String> letterCombinations(String digits) {
+        List<String> ls = new ArrayList<>();
+        if (digits == null || digits.length() == 0) {
+            return ls;
+        }
+        StringBuilder sb = new StringBuilder();
+        char[][] num = {{'a','b','c'}, {'d','e','f'}, {'g','h','i'}, {'j','k','l'}, {'m','n','o'}, {'p','q','r','s'}, {'t','u','v'}, {'w','x','y','z'}};
+        addletter(ls, sb, num, digits, 0);
+        return ls;
+    }
+
+    public void addletter(List<String> ls, StringBuilder sb, char[][] num, String s, int i) {
+        if (i == s.length()) {
+            String temp = sb.toString();
+            ls.add(temp);
+            return;
+        } else {
+            int index = Integer.valueOf(s.substring(i, i + 1)) - 2;
+            for (int j = 0; j < num[index].length; j++) {
+                sb.append(num[index][j]);
+                addletter(ls, sb, num, s, i + 1);
+                sb.deleteCharAt(sb.length() - 1);
+            }
+        }
+    }
+}
+```
+
+### 6. [ZigZag Conversion](https://leetcode.com/problems/zigzag-conversion/?tab=Description)
+
+我的方法就是找规律 // TODO
+
+```java
+public class Solution {
+    public String convert(String s, int numRows) {
+        if (s == null || s.length() == 0 || numRows <= 0) {
+            return "";
+        }
+        
+        if (numRows == 1) {
+            return s;
+        }
+        
+        int part = (numRows - 1) * 2;
+        int partnum = s.length() / part;
+        String res = "";
+        for (int j = 1; j <= numRows; j++) {
+            for (int i = 0; i <= partnum; i++) {
+                int index = part * i + j;
+                if (index <= s.length()) {
+                    res += s.charAt(index - 1);
+                    if (j > 1 && j < numRows) {
+                        if (part * i + 2 + part - j <= s.length())
+                            res += s.charAt(part * i + 2 + part - j - 1);
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+}
+```
+
+### 20. Valid Parentheses
+
+> Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+>
+> The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+- Easy
+
+用 stack 来做
+
+```java
+public class Solution {
+    public boolean isValid(String s) {
+        if (s.length() % 2 != 0 || s.length() == 0) {
+            return false;
+        }
+        Stack<Character> cs = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') cs.push(')');
+            else if (s.charAt(i) == '[') cs.push(']');
+            else if (s.charAt(i) == '{') cs.push('}');
+            else if (cs.isEmpty() || cs.pop() != s.charAt(i)) return false;
+        }
+        return cs.isEmpty();
+    }
+}
+```
+
+### 21. Merge Two Sorted Lists
+
+>Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
+
+- Easy
+
+被一道 easy 的题给虐了，一开始没想到用迭代的方法做，结果。。。
+
+```java
+public class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        if (l1.val < l2.val) {
+            l1.next = mergeTwoLists(l1.next, l2);
+            return l1;
+        } else {
+            l2.next = mergeTwoLists(l1, l2.next);
+            return l2;
+        }
+    }
+}
+```
+
+### 22. Generate Parentheses
+
+> Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+Recusive:
+
+- 终止条件：`str.length() == 2 * max`。
+- 如果`(`的数量小于`n`，加上`(`
+- 如果`)`数量小于`(`，加上`)`
+- 先尝试加`(`，再尝试加`)`
+- `((()))` -> `((` -> `(()`
+
+```java
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        String str = "";
+        backtracking(res, str, 0, 0, n);
+        return res;
+    }
+    void backtracking(List<String> res, String str, int open, int close, int max) {
+        if (str.length() == 2 * max) {
+            res.add(str);
+            return;
+        }
+        if (open < max) {
+            backtracking(res, str + "(", open + 1, close, max);
+        }
+        if (close < open) {
+            backtracking(res, str + ")", open, close + 1, max);
+        }
+    }
+```
+
+### 520. Detect Capital
+
+>Given a word, you need to judge whether the usage of capitals in it is right or not. We define the usage of capitals in a word to be right when one of the following cases holds:  
+>All letters in this word are capitals, like "USA".  
+>All letters in this word are not capitals, like "leetcode".  
+>Only the first letter in this word is capital if it has more than one letter, like "Google".  
+>Otherwise, we define that this word doesn't use capitals in a right way.
+
+`(int)'a', a=97,z=122,A=65,Z=90`
+
+`Character.compare(char, 'a') >= 0` 小写字母
+
+```java
+public class Solution {
+    public boolean detectCapitalUse(String word) {
+        if (word.length() <= 1) {
+            return true;
+        }
+
+        // upper case
+        if (Character.compare(word.charAt(0), 'a') < 0) {
+            if (word.length() == 2) return true;
+            else {
+                int x = Character.compare(word.charAt(1), 'a');
+                for (int i = 2; i < word.length(); i++) {
+                    int y = Character.compare(word.charAt(i), 'a');
+                    if ((x >= 0 && y < 0) || (x < 0 && y >= 0)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            for (int i = 1; i < word.length(); i++) {
+                int y = Character.compare(word.charAt(i), 'a');
+                if (y < 0) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+    }
+}
+```
+
+### 32. (Hard) [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/?tab=Description)
+
+>Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.  
+>For "(()", the longest valid parentheses substring is "()", which has length = 2.  
+>Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4.
+
+这道题花了很多长时间结果超出时间限制，吐血。。
+Top solution:
+
+```java
+public class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int max = 0;
+        int left = -1;
+        for (int j = 0; j < s.length(); j++) {
+            if (s.charAt(j) == '(') stack.push(j);
+            else {
+                if (stack.isEmpty()) left = j;
+                else {
+                    stack.pop();
+                    if (stack.isEmpty()) max = Math.max(max, j - left);
+                    else max = Math.max(max, j - stack.peek());
+                }
+            }
+        }
+        return max;
+    }
+}
+```
+
+想法对，但超出时间限制，跟 top solution 区别就在于我多用了数组，算是巧妙的方法。不过不管是时间复杂度还是空间复杂度都比推荐算法差。ORZ
+
+```java
+public class Solution {
+    public int longestValidParentheses(String s) {
+        if (s.length() <= 1) {
+            return 0;
+        }
+        int i = 0;
+        while (i < s.length() && s.charAt(i) == ')') {
+            i++;
+        }
+        
+        Stack<Integer> open = new Stack<>();
+        int[] nums = new int[s.length()];
+
+        int max = 0, count = 0;
+        for (int j = i; j < s.length(); j++) {
+            if (s.charAt(j) == '(') {
+                open.push(j);
+            } else if (!open.isEmpty()) {
+                int x = open.pop();
+                nums[x] = 1;
+                nums[j] = 1;
+            }
+        }
+        
+        for (int j = 0; j < nums.length; j++) {
+            if (nums[j] == 1) {
+                count++;
+                max = Math.max(max, count);
+            } else {
+                count = 0;
+            }
+        }
+        
+        return max;
+    }
+}
+```
