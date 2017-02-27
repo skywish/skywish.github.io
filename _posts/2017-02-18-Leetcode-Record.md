@@ -1653,3 +1653,190 @@ public class Solution {
     }
 }
 ```
+
+## 2017-02-27
+
+### 53. Maximum Subarray
+
+> Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+>
+> For example, given the array [-2,1,-3,4,-1,2,1,-5,4], the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+
+用 dp 做，`d[i] = Math.max(dp[i-1] + nums[i], nums[i])`，注意这次 result 并不在 dp 数组中取得，dp 数组只是记录 the maximum subarray ending with A[i]。
+
+```java
+public class Solution {
+    public int maxSubArray(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        dp[0] = nums[0];
+        int max = dp[0];
+        for (int i = 1; i < len; i++) {
+            // d[i] = Math.max(dp[i-1] + nums[i], nums[i]); the maximum subarray ending with A[i]
+            dp[i] = nums[i] + (dp[i - 1] <= 0 ? 0 : dp[i - 1]);
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+    }
+}
+```
+
+### 62. Unique Paths
+
+> A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+>
+> The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+>
+> How many possible unique paths are there?
+
+典型的 dp 问题，首先声明从 start 到 end 的路径和从 end 到 start 的路径数量是一样的。我们反转图形 G 得到 Grev。（其实并不需要反转。。。。。。）
+
+- subproblem: 找到从 `end` 到 `(i,j)` 有多少条 unique paths。
+- `dp[i][j] = dp[i - 1][j] + dp[i][j - 1];`
+- 边界条件：因为反转后我们只能向上走或向下走，所以`dp[i][0] = 1 && dp[0][j] = 1`
+
+```java
+public class Solution {
+    public int uniquePaths(int m, int n) {
+        // the unique path from finish (0, 0) to (m-1, n-1)
+        int[][] dp = new int[m][n];
+        dp[0][0] = 1;
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int j = 1; j < n; j++) {
+            dp[0][j] = 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+}
+```
+
+### 63. Unique Paths II
+
+> Follow up for "Unique Paths":
+>
+> Now consider if some obstacles are added to the grids. How many unique paths would there be?
+>
+> An obstacle and empty space is marked as 1 and 0 respectively in the grid.
+>
+> [Link](https://leetcode.com/problems/unique-paths-ii/?tab=Description)
+
+就是边界条件需要注意：
+
+- 如果 start 就有阻碍，直接返回 0。
+- 如果第一行或第一列某个位置有阻碍，该位置之后的所有格子都填 0。
+- `dp[x][y] = dp[x - 1][y] + dp[x][y - 1]`
+
+```java
+public class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length;
+        int n = obstacleGrid[0].length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = obstacleGrid[0][0] == 1 ? 0 : 1;
+        if (dp[0][0] == 0) {
+            return 0;
+        }
+        for (int j = 1; j < m; j++) {
+            if (obstacleGrid[j][0] == 1 || dp[j - 1][0] == 0) dp[j][0] = 0;
+            else dp[j][0] = 1;
+        }
+        for (int j = 1; j < n; j++) {
+            if (obstacleGrid[0][j] == 1 || dp[0][j - 1] == 0) dp[0][j] = 0;
+            else dp[0][j] = 1;
+        }
+        for (int x = 1; x < m; x++) {
+            for (int y = 1; y < n; y++) {
+                if (obstacleGrid[x][y] == 1) {
+                    dp[x][y] = 0;
+                } else {
+                    dp[x][y] = dp[x - 1][y] + dp[x][y - 1];
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+}
+```
+
+### 64. Minimum Path Sum
+
+> Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
+>
+> [Link](https://leetcode.com/problems/minimum-path-sum/?tab=Description)
+
+```java
+public class Solution {
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        for (int i = 1; i < m; i++) {
+            grid[i][0] = grid[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < n; i++) {
+            grid[0][i] = grid[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                grid[i][j] = Math.min(grid[i - 1][j], grid[i][j - 1]) + grid[i][j];
+            }
+        }
+        return grid[m - 1][n - 1];
+    }
+}
+```
+
+### 70. Climbing Stairs
+
+> You are climbing a stair case. It takes n steps to reach to the top.
+>
+> Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+> [Link](https://leetcode.com/problems/climbing-stairs/?tab=Description)
+
+基本思路就是用 dp 做，不过传统 dp 需要建立数组，比较费时间，这道题可以不通过数组，只需要几个变量就行了。
+
+dp solution without an array:
+
+```java
+public class Solution {
+    public int climbStairs(int n) {
+        if (n <= 0) return 0;
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+
+        int before2 = 1, before1 = 2, res = 0;
+        for (int i = 3; i <= n; i++) {
+            res = before1 + before2;
+            before2 = before1;
+            before1 = res;
+        }
+
+        return res;
+    }
+}
+```
+
+dp solution with an array:
+
+```java
+public class Solution {
+    public int climbStairs(int n) {
+        if (n <= 0) return 0;
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+}
+```
