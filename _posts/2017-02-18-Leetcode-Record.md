@@ -1840,3 +1840,232 @@ public class Solution {
     }
 }
 ```
+
+### 72. Edit Distance
+
+> Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
+>
+> You have the following 3 operations permitted on a word:
+>
+>a) Insert a character  
+>b) Delete a character  
+>c) Replace a character
+
+`dp[i][j]` 代表 `word1 (1...i)` 和 `word2 (1...j)` 之间的差别：
+
+- if `c == d`, then : `f[i][j] = f[i-1][j-1]`
+- if we replaced c with d: `f[i][j] = f[i-1][j-1] + 1`
+- if we added d after c: `f[i][j] = f[i][j-1] + 1`
+- if we deleted c: `f[i][j] = f[i-1][j] + 1`
+
+```java
+public class Solution {
+    public int minDistance(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i;
+        }
+        for (int i = 0; i <= n; i++) {
+            dp[0][i] = i;
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i][j - 1] + 1, dp[i - 1][j] + 1), dp[i - 1][j - 1] + 1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+
+### 91. Decode Ways
+
+[Link](https://leetcode.com/problems/decode-ways/?tab=Description)
+
+很复杂的一道题，尽管思路简单用 dp 做，但是边界条件**复杂**，需要好好考虑。
+
+考虑前两位字符：
+
+- 以`0`开始的字符串都不符合要求
+- `10, 20` 有且只有一种可能
+- `30, 40, 50...` 等不符合要求
+- 其余数字 `11, 12, 13, ...` 有两种可能
+
+考虑接下来的数字:
+
+- 当前数字为`0`
+    - if 前一个数字为`0`或者`>3`，不符合要求，`return 0`
+    - else 有且只有一种可能，`dp[i] == dp[i - 2]`
+- 当前数字不为`0`
+    - if 前一个数字为`0`或者`两者加起来>=27`，有且只有一种可能，`dp[i] == dp[i - 1]`
+    - else 有两种可能，`dp[i] == dp[i - 2] + dp[i - 1]`
+
+字符比较大小：`Character.compare(x, y)`，如果`x > y`，返回1
+字符串比较大小：`string1.compareTo(string2)`，如果`string1 > string2`，返回1.
+
+```java
+public class Solution {
+    public int numDecodings(String s) {
+        if (s == null || s.length() == 0) return 0;
+        if (s.charAt(0) == '0') return 0;
+        int len = s.length();
+        if (len == 1) return 1;
+        if (len == 2) {
+            return deter2(s);
+        }
+        int before2 = 1;
+        int before1 = deter2(s);
+        if (before1 == 0) {
+            return 0;
+        }
+        int res = 0;
+        for (int i = 2; i < s.length(); i++) {
+            if (s.charAt(i) == '0') {
+                if (s.charAt(i - 1) == '0' || Character.compare(s.charAt(i - 1), '3') >= 0) {
+                    return 0;
+                } else {
+                    res = before2;
+                }
+            } else {
+                if (s.charAt(i - 1) == '0' || s.substring(i - 1, i + 1).compareTo("26") > 0) {
+                    res = before1;
+                } else {
+                    res = before1 + before2;
+                }
+            }
+            before2 = before1;
+            before1 = res;
+        }
+        return res;
+    }
+
+    public int deter2(String s) {
+        if (s.charAt(1) == '0') {
+            if (Character.compare(s.charAt(0), '3') >= 0) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else if (s.substring(0, 2).compareTo("11") >= 0 && s.substring(0, 2).compareTo("26") <= 0) return 2;
+        else return 1;
+    }
+}
+```
+
+### 121. Best Time to Buy and Sell Stock
+
+> Say you have an array for which the ith element is the price of a given stock on day i.
+>
+> If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+
+简单的题，每次循环记录`(0, i)`上最小的值，再把当前值和最小值相减，与最大值作比较，保留较大者。
+
+```java
+public class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+        int min = Math.min(prices[0], prices[1]);
+        int max = Math.max(0, prices[1] - prices[0]);
+        for (int i = 2; i < prices.length; i++) {
+            max = Math.max(max, prices[i] - min);
+            min = Math.min(min, prices[i]);
+        }
+        return max;
+    }
+}
+```
+
+### 123. Best Time to Buy and Sell Stock III
+
+> Say you have an array for which the ith element is the price of a given stock on day i.
+>
+> Design an algorithm to find the maximum profit. You may complete at most two transactions.
+
+这道题个人思路是先找出最大的减区间`(i, j)`，`result = maxSum(0, i) + maxSum(j, end)`，思路应该对的，但实现起来一如既往的复杂。
+
+看了看 Top solution 又是一行行不知道怎么想出来的代码，给个思路啊！
+
+```java
+public class Solution {
+    public int maxProfit(int[] prices) {
+        int hold1 = Integer.MIN_VALUE, hold2 = Integer.MIN_VALUE;
+        int release1 = 0, release2 = 0;
+        for (int i : prices) {                         // Assume we only have 0 money at first
+            release2 = Math.max(release2, hold2 + i);  // The maximum if we've just sold 2nd stock so far.
+            hold2 = Math.max(hold2, release1 - i);     // The maximum if we've just buy  2nd stock so far.
+            release1 = Math.max(release1, hold1 + i);  // The maximum if we've just sold 1nd stock so far.
+            hold1 = Math.max(hold1, -i);               // The maximum if we've just buy  1st stock so far. 
+        }
+        return release2; // Since release1 is initiated as 0, so release2 will always higher than release1.
+    }
+}
+```
+
+自己方案，没跑出来，先列着。//TODO
+
+```java
+public class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length <= 1) return 0;
+        int[] gap = new int[prices.length];
+        gap[0] = 0;
+        int begin = 0, end = 0, maxGap = 0;
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i] - prices[i - 1] < 0) 
+                gap[i] = gap[i - 1] + prices[i] - prices[i - 1];
+            else 
+                gap[i] = gap[i - 1];
+            maxGap = Math.min(maxGap, gap[i]);
+        }
+        for (int i = 1; i < gap.length; i++) {
+            if (gap[i] < 0 && gap[i - 1] >= 0) 
+                begin = i - 1;
+            if (gap[i] == maxGap) {
+                end = i;
+                break;
+            }
+        }
+        
+        return findSum(begin, end, prices, gap);
+    }
+    
+    public int findSum(int begin, int end, int[] prices, int[] gap) {
+        int max1 = 0, max2 = 0;
+        if (begin == 0 && end == 0) {
+            max1 = 0;
+        } else if (begin == 0 && end != 0) {
+            max1 = prices[0];
+        } else {
+            gap[0] = 0;
+            for (int i = 1; i <= begin; i++) {
+                if (prices[i] - prices[i - 1] > 0) 
+                    gap[i] = gap[i - 1] + prices[i] - prices[i - 1];
+                else 
+                    gap[i] = gap[i - 1];
+                max1 = Math.max(max1, gap[i]); 
+            }
+        }
+        if (end == gap.length - 1) {
+            max2 = prices[end];
+        } else {
+            gap[end] = 0;
+        for (int i = end + 1; i < gap.length; i++) {
+            if (prices[i] - prices[i - 1] > 0) 
+                gap[i] = gap[i - 1] + prices[i] - prices[i - 1];
+            else 
+                gap[i] = gap[i - 1];
+            max2 = Math.max(max2, gap[i]); 
+        }
+        }
+        return max1 + max2;
+    }
+}
+```
