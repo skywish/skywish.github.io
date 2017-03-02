@@ -243,33 +243,6 @@ public class Solution {
 }
 ```
 
-### 152. Maximum Product Subarray
-
-Top solution: Loop through the array, each time remember the max and min value
-for the previous product, the most important thing is to update the max and min
-value: we have to compare among `max * A[i], min * A[i]` as well as `A[i]`, since this is product, a negative * negative could be positive.
-
-```java
-public class Solution {
-    public int maxProduct(int[] A) {
-        if (A == null || A.length == 0) {
-            return 0;
-        }
-        int max = A[0], min = A[0], result = A[0];
-        for (int i = 1; i < A.length; i++) {
-            int temp = max;
-            max = Math.max(Math.max(max * A[i], min * A[i]), A[i]);
-            min = Math.min(Math.min(temp * A[i], min * A[i]), A[i]);
-            if (max > result) {
-                result = max;
-            }
-        }
-        return result;
-    }
-}
-
-```
-
 ## 2017-02-10
 
 ### 15. 3Sum
@@ -1210,9 +1183,9 @@ public class Solution {
 }
 ```
 
-### 2017-02-23
+## 2017-02-23
 
-#### 60. Permutation Sequence
+### 60. Permutation Sequence
 
 >The set [1,2,3,…,n] contains a total of n! unique permutations.
 >
@@ -2046,11 +2019,11 @@ public class Solution {
         } else {
             gap[0] = 0;
             for (int i = 1; i <= begin; i++) {
-                if (prices[i] - prices[i - 1] > 0) 
+                if (prices[i] - prices[i - 1] > 0)
                     gap[i] = gap[i - 1] + prices[i] - prices[i - 1];
-                else 
+                else
                     gap[i] = gap[i - 1];
-                max1 = Math.max(max1, gap[i]); 
+                max1 = Math.max(max1, gap[i]);
             }
         }
         if (end == gap.length - 1) {
@@ -2058,14 +2031,404 @@ public class Solution {
         } else {
             gap[end] = 0;
         for (int i = end + 1; i < gap.length; i++) {
-            if (prices[i] - prices[i - 1] > 0) 
+            if (prices[i] - prices[i - 1] > 0)
                 gap[i] = gap[i - 1] + prices[i] - prices[i - 1];
-            else 
+            else
                 gap[i] = gap[i - 1];
-            max2 = Math.max(max2, gap[i]); 
+            max2 = Math.max(max2, gap[i]);
         }
         }
         return max1 + max2;
+    }
+}
+```
+
+## 2017-02-28
+
+### 152. Maximum Product Subarray
+
+很巧妙，用两个变量分别记录当前最小值和最大值，遇到`nums[i] < 0`，`maxsofar = minsofar * nums[i]`，反之，相反。
+
+- 如果`nums[i] > 0`, `maxsofar = Math.max(maxsofar * nums[i], nums[i]);`
+    - 如果 `maxsofar <= 1`, `nums[i]`较大。
+    - 如果 `maxsofar > 1`, `maxsofar * nums[i]`较大。
+
+```java
+public class Solution {
+    public int maxProduct(int[] nums) {
+        int max = nums[0], maxsofar = max, minsofar = max;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < 0) {
+                int temp = maxsofar;
+                maxsofar = minsofar;
+                minsofar = temp;
+            }
+            maxsofar = Math.max(maxsofar * nums[i], nums[i]);
+            minsofar = Math.min(minsofar * nums[i], nums[i]);
+            max = Math.max(max, maxsofar);
+        }
+        return max;
+    }
+}
+```
+
+### 198. House Robber
+
+> You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that **adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.**
+>
+> Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+
+比较简单
+
+```java
+public class Solution {
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
+        int before2 = nums[0], before1 = Math.max(nums[0], nums[1]), max = before1;
+        for (int i = 2; i < nums.length; i++) {
+            max = Math.max(before2 + nums[i], before1);
+            before2 = before1;
+            before1 = max;
+        }
+        return max;
+    }
+}
+```
+
+### 213. House Robber II
+
+After robbing those houses on that street, the thief has found himself a new place for his thievery so that he will not get too much attention. This time, all houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, the security system for these houses remain the same as for those in the previous street.
+
+Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+
+思路跟上一题一样，因为是个环结构，
+
+- 从`nums[0]`开始遍历`nums(0, len - 2)`，排除最后一个数.
+- 如果从从`nums[1]`开始遍历`nums(1, len - 1)`，排除第一个数。
+
+```java
+public class Solution {
+    public int rob(int[] nums) {
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
+        if (nums.length == 3) return Math.max(Math.max(nums[0], nums[1]), nums[2]);
+        return Math.max(rob1(Arrays.copyOfRange(nums, 1, nums.length)), nums[0] + rob1(Arrays.copyOfRange(nums, 2, nums.length-1)));
+    }
+
+    public int rob1(int[] nums) {
+        int preno = 0;
+        int preyes = nums[0];
+        for (int i = 1; i < nums.length; i++)
+        {
+            int tmp = preyes;
+            preyes = preno + nums[i];
+            preno = Math.max(preno, tmp);
+        }
+        return Math.max(preyes, preno);
+    }
+}
+```
+
+```java
+public class Solution {
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        int len = nums.length;
+        if (len == 1) return nums[0];
+        if (len == 2) return Math.max(nums[0], nums[1]);
+        if (len == 3) return Math.max(Math.max(nums[0], nums[1]), nums[2]);
+        int before02 = nums[0], before01 = Math.max(nums[0], nums[1]), max0 = before01;
+        int before12 = nums[1], before11 = Math.max(nums[1], nums[2]), max1 = before11;
+        int max;
+        max0 = Math.max(before02 + nums[2], before01);
+        before02 = before01;
+        before01 = max0;
+        for (int i = 3; i < len - 1; i++) {
+            max0 = Math.max(before02 + nums[i], before01);
+            before02 = before01;
+            before01 = max0;
+            max1 = Math.max(before12 + nums[i], before11);
+            before12 = before11;
+            before11 = max1;
+        }
+        max1 = Math.max(before12 + nums[len - 1], before11);
+        before12 = before11;
+        before11 = max1;
+        max = Math.max(max0, max1);
+        return max;
+    }
+}
+```
+
+### 10. Regular Expression Matching
+
+```xml
+Implement regular expression matching with support for '.' and '*'.
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+The matching should cover the entire input string (not partial).
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+Some examples:  
+isMatch("aa","a") → false  
+isMatch("aa","aa") → true  
+isMatch("aaa","aa") → false  
+isMatch("aa", "a*") → true  
+isMatch("aa", ".*") → true  
+isMatch("ab", ".*") → true  
+isMatch("aab", "c*a*b") → true  
+```
+
+思路：`dp[i][j]`代表在 `s(0, i) p(0, j)` 上是否满足条件，
+
+```
+1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
+2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
+3, If p.charAt(j) == '*': 
+   here are two sub conditions:
+               1   if p.charAt(j-1) != s.charAt(i) : dp[i][j] = dp[i][j-2]  //in this case, a* only counts as empty
+               2   if p.charAt(j-1) == s.charAt(i) or p.charAt(j-1) == '.':
+                              dp[i][j] = dp[i-1][j]    //in this case, a* counts as multiple a 
+                           or dp[i][j] = dp[i][j-1]   // in this case, a* counts as single a
+                           or dp[i][j] = dp[i][j-2]   // in this case, a* counts as empty
+```
+
+### Queue Reconstruction by Height
+
+`Arrays.sort(people, (a, b) -> a[0] == b[0] ? a[1] - b[1] : b[0] - a[0])`，比较`a, b`两个数，先比较第一位，第一位按降序排，在比较第二位，第二位按升序排。
+
+```java
+public class Solution {
+    public int[][] reconstructQueue(int[][] people) {
+        Arrays.sort(people, (a, b) -> a[0] == b[0] ? a[1] - b[1] : b[0] - a[0]);
+        List<int[]> list = new LinkedList<>();
+        for (int[] p : people) {
+            list.add(p[1], p);
+        }
+        return list.toArray(new int[list.size()][]);
+    }
+}
+```
+
+### 513. Find Bottom Left Tree Value
+
+```xml
+Given a binary tree, find the leftmost value in the last row of the tree.
+```
+
+用百试不爽的 Layer1, layer2 方法，根据之前总结的遍历顺序，用 LinkedList 存储节点。
+好吧，有个简洁的方法，记录 layer.size()，用 for 循环代替。
+
+```java
+public class Solution {
+    public int findBottomLeftValue(TreeNode root) {
+        LinkedList<TreeNode> layer = new LinkedList<>();
+        layer.add(root);
+        boolean first = true;
+        int leftmost = root.val;
+        while (!layer.isEmpty()) {
+            int size = layer.size(); // important, if in for loop, we write i < layer.size(), it doesn't work, layer.size() often change
+            for (int i = 0; i < size; i++) {
+                TreeNode next = layer.poll();
+                if (i == 0) leftmost = next.val;
+                if (next.left != null) {
+                    layer.add(next.left);
+                }
+                if (next.right != null) {
+                    layer.add(next.right);
+                }
+            }
+        }
+        return leftmost;
+    }
+}
+```
+
+```java
+public class Solution {
+    public int findBottomLeftValue(TreeNode root) {
+        LinkedList<TreeNode> layer1 = new LinkedList<>();
+        LinkedList<TreeNode> layer2 = new LinkedList<>();
+        layer1.add(root);
+        boolean first = true;
+        int leftmost = root.val;
+        while (!layer1.isEmpty()) {
+            while (!layer1.isEmpty()) {
+                TreeNode next = layer1.poll();
+                if (next.left != null) {
+                    layer2.add(next.left);
+                    if (first) {
+                        leftmost = next.left.val;
+                        first = false;
+                    }
+                }
+                if (next.right != null) {
+                    layer2.add(next.right);
+                    if (first) {
+                        leftmost = next.right.val;
+                        first = false;
+                    }
+                }
+            }
+            first = true;
+            while (!layer2.isEmpty()) {
+                TreeNode next = layer2.poll();
+                if (next.left != null) {
+                    layer1.add(next.left);
+                    if (first) {
+                        leftmost = next.left.val;
+                        first = false;
+                    }
+                }
+                if (next.right != null) {
+                    layer1.add(next.right);
+                    if (first) {
+                        leftmost = next.right.val;
+                        first = false;
+                    }
+                }
+            }
+            first = true;
+        }
+        return leftmost;
+    }
+}
+```
+
+### 477. Total Hamming Distance
+
+```xml
+The Hamming distance between two integers is the number of positions at which the corresponding bits are different.
+
+Now your job is to find the total Hamming distance between all pairs of the given numbers.
+
+Example:
+Input: 4, 14, 2
+
+Output: 6
+
+Explanation: In binary representation, the 4 is 0100, 14 is 1110, and 2 is 0010 (just showing the four bits relevant in this case). So the answer will be:
+HammingDistance(4, 14) + HammingDistance(4, 2) + HammingDistance(14, 2) = 2 + 2 + 2 = 6.
+```
+
+看每个数每一位上有多少个1，多少个0，每一位上的 `Hamming Distance = (num of 1) * (num of 0)`，把32位所有的 Hamming Distance 相加，就得到 total Hamming Distance。
+
+- & 巧用， `n & 1 = 1 or 0`, 可以用来判断 `n` 是否以 1 结尾。
+
+```java
+public class Solution {
+    public int totalHammingDistance(int[] nums) {
+        int sum = 0, count = 0;
+        for (int i = 0; i < 32; i++) {
+            for (int j = 0; j < nums.length; j++) {
+                count += (nums[j] >> i) & 1;
+            }
+            sum += count * (nums.length - count);
+            count = 0;
+        }
+        
+        return sum;
+    }
+}
+```
+
+## 2017-03-01
+
+### 141. Linked List Cycle
+
+```xml
+Given a linked list, determine if it has a cycle in it.
+```
+
+判断是否存在环，用两个指针，一个一次走一步，一个一次走两步。如果相遇，则说明存在环，如果指针指向 null ，则说明不存在环。
+
+```java
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if (head == null) return false;
+        ListNode pass1 = head;
+        ListNode pass2 = head;
+        while (pass2.next != null && pass2.next.next != null) {
+            pass1 = pass1.next;
+            pass2 = pass2.next.next;
+            if (pass1 == pass2) return true;
+        }
+        return false;
+    }
+}
+```
+
+### 88. Merge Sorted Array
+
+```xml
+Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one
+sorted array.
+
+Note:
+You may assume that nums1 has enough space (size that is greater or equal to m
++ n) to hold additional elements from nums2. The number of elements initialized
+in nums1 and nums2 are m and n respectively.
+```
+
+从末尾开始排起！
+
+```java
+public class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = m - 1, j = n - 1;
+        while (i >= 0 && j >= 0) {
+            if (nums1[i] > nums2[j]) {
+                nums1[i + j + 1] = nums1[i];
+                i--;
+            }  else {
+                nums1[i + j + 1] = nums2[j];
+                j--;
+            }
+        }
+        
+        while (j >= 0) {
+            nums1[j] = nums2[j];
+            j--;
+        }
+    }
+}
+```
+
+### 303. Range Sum Query - Immutable
+
+```xml
+Given an integer array nums, find the sum of the elements between indices i and
+j (i ≤ j), inclusive.
+
+Example:
+Given nums = [-2, 0, 3, -5, 2, -1]
+
+sumRange(0, 2) -> 1
+sumRange(2, 5) -> -1
+sumRange(0, 5) -> -3
+```
+
+存储 sum 即可
+
+```java
+public class NumArray {
+    int[] sums;
+
+    public NumArray(int[] nums) {
+        if (nums != null && nums.length > 0) {
+            sums = new int[nums.length];
+            sums[0] = nums[0];
+            for (int i = 1; i < sums.length; i++) {
+                sums[i] = sums[i - 1] + nums[i];
+            }
+        }
+    }
+    
+    public int sumRange(int i, int j) {
+        return i == 0 ? sums[j] : sums[j] - sums[i - 1];
     }
 }
 ```
