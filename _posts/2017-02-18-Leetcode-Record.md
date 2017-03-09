@@ -2432,3 +2432,241 @@ public class NumArray {
     }
 }
 ```
+
+## 2017-03-03
+
+### 258. Add Digits
+
+```
+Given a non-negative integer num, repeatedly add all its digits until the result has only one digit.
+
+For example:
+
+Given num = 38, the process is like: 3 + 8 = 11, 1 + 1 = 2. Since 2 has only one digit, return it.
+
+Follow up:
+Could you do it without any loop/recursion in O(1) runtime?
+```
+
+The problem, widely known as digit root problem, has a [congruence formula](https://en.wikipedia.org/wiki/Digital_root#Congruence_formula):
+
+For base b (decimal case b = 10), the digit root of an integer is:
+```
+dr(n) = 0 if n == 0
+dr(n) = (b-1) if n != 0 and n % (b-1) == 0
+dr(n) = n mod (b-1) if n % (b-1) != 0
+or
+dr(n) = 1 + (n - 1) % (b - 1)
+```
+
+Note here, when n = 0, since (n - 1) % 9 = -1, the return value is zero (correct).
+
+```python
+return 0 if num is 0 else 1 + (num - 1) % 9
+
+class Solution(object):
+    def addDigits(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        sum = num
+        while sum >= 10:
+            can = sum
+            sum = 0
+            while can > 0:
+                sum += can % 10
+                can /= 10
+        return sum
+```
+
+### 292. Nim Game
+
+> You are playing the following Nim Game with your friend: There is a heap of stones on the table, each time one of you take turns to remove 1 to 3 stones. The one who removes the last stone will be the winner. You will take the first turn to remove the stones.
+>
+> Both of you are very clever and have optimal strategies for the game. Write a function to determine whether you can win the game given the number of stones in the heap.
+>
+> For example, if there are 4 stones in the heap, then you will never win the game: no matter 1, 2, or 3 stones you remove, the last stone will always be removed by your friend.
+
+通过列举，可以清楚看到
+
+- `f(n) = f(n - 4)`
+- `f(0) = False, f(1, 2, 3) = True`
+
+```python
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        return False if n % 4 == 0 else True
+```
+
+## 2017-03-05
+
+### 451. Sort Characters By Frequency
+
+- 先建立 map 记录每个字母的频率
+- 再建立数组，长度为字符串长度，array[i] 存储 长度为 i 的字母列表
+
+```python
+from collections import Counter
+
+class Solution(object):
+    def frequencySort(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        c1, c2 = Counter(s), {}
+        for k, v in c1.items():
+            c2.setdefault(v, []).append(k * v)
+        res = [c2[i][j] for i in range(len(s), -1, -1) if i in c2 for j in range(len(c2[i]))]
+        return ''.join(res)
+```
+
+## 2017-03-06
+
+### 2. Add Two Numbers
+
+> You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+>
+> You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+>
+> Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+> Output: 7 -> 0 -> 8
+
+Top solution:
+```python
+def addTwoNumbers(self, l1, l2):
+    carry = 0
+    root = n = ListNode(0)
+    while l1 or l2 or carry:
+        v1 = v2 = 0
+        if l1:
+            v1 = l1.val
+            l1 = l1.next
+        if l2:
+            v2 = l2.val
+            l2 = l2.next
+        carry, val = divmod(v1+v2+carry, 10)
+        n.next = ListNode(val)
+        n = n.next
+    return root.next
+```
+
+My solution
+
+```python
+class Solution(object):
+    def addTwoNumbers(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        carry = 0
+        # the node before first node 
+        res = ListNode(0)
+        begin = res
+        while l1 or l2:
+            sum = carry
+            if l1:
+                sum += l1.val
+                l1 = l1.next
+            if l2:
+                sum += l2.val
+                l2 = l2.next
+            res.next = ListNode(sum % 10)
+            carry = sum / 10 
+            res = res.next
+        if carry > 0:
+            res.next = ListNode(carry)
+        return begin.next          
+```
+
+### 59. Spiral Matrix II
+
+Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+For example,
+Given n = 3,
+
+You should return the following matrix:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+
+这道题可以使用4个变量分别记录：行的起始点和终止点，列的起始点和终止点，每次遍历完之后都增加减少相应值。
+
+```java
+public class Solution {
+    public int[][] generateMatrix(int n) {
+        int[][] res = new int[n][n];
+        if (n <= 0) return res;
+        int begin_row = 0, end_row = n - 1, begin_col = 0, end_col = n - 1, count = 1;
+        while (count <= n * n) {
+            for (int j = begin_col; j <= end_col; j++) {
+                res[begin_row][j] = count;
+                count++;
+            }
+            begin_row++;
+            for (int i = begin_row; i <= end_row; i++) {
+                res[i][end_col] = count;
+                count++;
+            }
+            end_col--;
+            for (int j = end_col; j >= begin_col; j--) {
+                res[end_row][j] = count;
+                count++;
+            }
+            end_row--;
+            for (int i = end_row; i >= begin_row; i--) {
+                res[i][begin_col] = count;
+                count++;
+            }
+            begin_col++;
+        }
+        return res;
+    }
+}
+```
+
+### 102. Binary Tree Level Order Traversal
+
+Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+
+Easy， 这道题用之前总结的方法即可。
+
+```java
+public class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (root == null) return res;
+        LinkedList<TreeNode> layer = new LinkedList<>();
+        layer.add(root);
+        while (!layer.isEmpty()) {
+            List<Integer> list = new ArrayList<>();
+            int size = layer.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode next = layer.poll();
+                list.add(next.val);
+                if (next.left != null) layer.add(next.left);
+                if (next.right != null) layer.add(next.right);
+            }
+            res.add(list);
+        }
+        return res;
+    }
+}
+```
